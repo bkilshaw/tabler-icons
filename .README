@@ -1,0 +1,45 @@
+
+```
+    plugin(function ({ matchComponents, theme }) {
+      let iconsDir = path.join(__dirname, "../deps/tabler-icons")
+      let packs = [
+        "filled",
+        "outline",
+      ];
+
+      let values = {};
+
+      packs.forEach((pack) => {
+        fs.readdirSync(path.join(iconsDir, pack)).forEach((file) => {
+          let name = pack + "-" + path.basename(file, ".svg");
+          values[name] = { name, fullPath: path.join(iconsDir, pack, file) };
+        });
+      });
+
+      matchComponents(
+        {
+          fa: ({ name, fullPath }) => {
+            let content = fs
+              .readFileSync(fullPath)
+              .toString()
+              .replace(/\r?\n|\r/g, "");
+
+            let size = theme("spacing.6");
+
+            return {
+              [`--fa-${name}`]: `url('data:image/svg+xml;utf8,${content}')`,
+              "-webkit-mask": `var(--fa-${name})`,
+              mask: `var(--fa-${name})`,
+              "mask-repeat": "no-repeat",
+              "background-color": "currentColor",
+              "vertical-align": "middle",
+              display: "inline-block",
+              width: size,
+              height: size,
+            };
+          },
+        },
+        { values },
+      );
+    }),
+    ```
